@@ -12,6 +12,8 @@ import datetime         # To get dates and times of pomodoros for logging
 import sqlite3          # Database interactions
 from time import sleep  # Waiting for pomodoro to complete
 from sys import exit    # Exiting if pomodoro cancelled
+import subprocess       # For playing beep sound
+import os               # For devnull to hide "play"'s output
 
 POMODORO_DURATION = 0.25 #Length of pomodoro in minutes
 
@@ -59,7 +61,12 @@ def do_pomodoro(duration):
         try:
             sleep(duration_sec)  # Wait for length of pomodoro
             print("Pomodoro Complete!")
+
             # Play ding
+            FNULL = open(os.devnull, "w")  # Redirect output to /dev/null
+            subprocess.call(["play", "-v", "0.2", "timer_done.wav"],
+                            stdout=FNULL,
+                            stderr=subprocess.STDOUT)
             complete = True      # End the loop
 
         except KeyboardInterrupt:
