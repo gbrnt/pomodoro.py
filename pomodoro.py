@@ -9,7 +9,10 @@ from it.
 """
 
 import datetime    # To get dates and times of pomodoros for logging
-import sqlite3
+import sqlite3     # Database interactions
+from time import sleep
+
+POMODORO_DURATION = 25  # Length of pomodoro in minutes
 
 
 def startup(db_name):
@@ -37,6 +40,7 @@ def shutdown(connection):
 
 
 def db_test_run():
+    """Insert a test row into the database"""
     example_row = (datetime.datetime.now(),
                    "Doing things",
                    25,
@@ -46,4 +50,24 @@ def db_test_run():
     db_insert(conn, example_row)
     shutdown(conn)
 
-db_test_run()
+def do_pomodoro(task, duration):
+    #Get time
+    #Start timing for duration
+    #If pomodoro interrupted, record duration as current time
+    #Play ding when pomodoro is complete
+    #Create row for pomodoro
+    #Insert row into database
+    time = datetime.datetime.now()
+    duration_sec = duration * 60
+    complete = False
+
+    while not complete:
+        try:
+            sleep(duration_sec)
+            print("DONE!")
+            complete = True
+        except KeyboardInterrupt:
+            print("Interrupted!")
+            complete = "Interrupted"
+
+do_pomodoro("Thing", 1)
