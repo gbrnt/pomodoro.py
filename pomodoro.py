@@ -8,15 +8,16 @@ a database I can access after a week of intensive work to get some statistics
 from it.
 """
 
-import datetime    # To get dates and times of pomodoros for logging
-import sqlite3     # Database interactions
-from time import sleep
+import datetime         # To get dates and times of pomodoros for logging
+import sqlite3          # Database interactions
+from time import sleep  # Waiting for pomodoro to complete
+from sys import exit    # Exiting if pomodoro cancelled
 
-POMODORO_DURATION = 25  # Length of pomodoro in minutes
+POMODORO_DURATION = 0.25 #Length of pomodoro in minutes
 
 
 def startup(db_name):
-    """Open database"""
+    """Open database, return connection"""
     connection = sqlite3.connect(db_name)
     cur = connection.cursor()
 
@@ -39,35 +40,43 @@ def shutdown(connection):
     connection.close()
 
 
-def db_test_run():
-    """Insert a test row into the database"""
-    example_row = (datetime.datetime.now(),
-                   "Doing things",
-                   25,
-                   True)
+def do_pomodoro(duration):
+    """Main method. Starts up, runs pomodoro and records it"""
+    connection = startup("pomodoros.db")
 
-    conn = startup("pomodoros.db")
-    db_insert(conn, example_row)
-    shutdown(conn)
+    # Get task name ready for recording
+    task = input("Input task name\n> ")
+    print("Pomodoro starting in 5 seconds...")
+    sleep(5)  # To give a bit of mental preparation time
+    #print("...Started.")  # Not sure that's necessary
 
-def do_pomodoro(task, duration):
-    #Get time
-    #Start timing for duration
-    #If pomodoro interrupted, record duration as current time
-    #Play ding when pomodoro is complete
-    #Create row for pomodoro
-    #Insert row into database
-    time = datetime.datetime.now()
-    duration_sec = duration * 60
-    complete = False
+    start_time = datetime.datetime.now()
+    duration_sec = duration * 60  # time.sleep takes duration in seconds
+
+    complete = False  # Used to show whether a pomodoro was interrupted
 
     while not complete:
         try:
-            sleep(duration_sec)
-            print("DONE!")
-            complete = True
-        except KeyboardInterrupt:
-            print("Interrupted!")
-            complete = "Interrupted"
+            sleep(duration_sec)  # Wait for length of pomodoro
+            print("Pomodoro Complete!")
+            # Play ding
+            complete = True      # End the loop
 
-do_pomodoro("Thing", 1)
+        except KeyboardInterrupt:
+            print("\nPomodoro interrupted!")
+            break                # Task not complete but needs to end
+
+    if complete:
+        length = datetime.timedelta(minutes=duration)   # Use full length
+    else:
+        end_time = datetime.datetime.now()              # Pomodoro unfinished 
+        length = end_time - start_time                  # So use timedelta
+    
+    # Use string of length because timedelta is unsupported in sqlite
+    row = (start_time, task, str(length), complete)
+    #print(row)
+    db_insert(connection, row)
+
+    shutdown(connection)
+
+do_pomodoro(POMODORO_DURATION)
