@@ -7,23 +7,26 @@ The task name, start time, duration and completeness are recorded in
 a database. This can be exported to csv using pomodoro-export.py
 """
 
-import datetime         # To get dates and times of pomodoros for logging
-import sqlite3          # Database interactions
-from time import sleep  # Waiting for pomodoro to complete
-import subprocess       # For playing beep sound
-import os               # For devnull to hide "play"'s output
-from sys import exit
-import db_interaction as db
+import datetime              # Getting dates and times of pomodoros for logging
+from time import sleep       # Waiting for pomodoro to complete
+import subprocess            # Playing beep sound
+import os                    # Devnull to hide "play"'s output
+from sys import exit         # Exiting after pomodoro cancelled
+import db_interaction as db  # Database interactions
 
 POMODORO_DURATION = 25  # Length of pomodoro in minutes
 
 
-def pomodoro_start():
+def pomodoro_start(connection):
     """Get the information ready to start the pomodoro"""
-    # Get task name ready for recording
-    task = input("Input task name\n> ")
-    print("Pomodoro starting in 5 seconds...")
-    sleep(5)  # To give a bit of mental preparation time
+    try:
+        # Get task name ready for recording
+        task = input("Input task name\n> ")
+        print("Pomodoro starting in 5 seconds...")
+        sleep(5)  # To give a bit of mental preparation time
+    except KeyboardInterrupt:
+        print("\nPomodoro cancelled.")
+        exit(0)
 
     start_time = datetime.datetime.now()
     start_only_time = str(start_time.time()).split(".")[:-1][0]  # H:M:S
@@ -72,7 +75,7 @@ def pomodoro_time(start_time, duration):
 def do_pomodoro(duration):
     """Main method. Starts up, runs pomodoro and records it"""
     connection = db.startup("pomodoros.db")
-    task, start_time = pomodoro_start()
+    task, start_time = pomodoro_start(connection)
     complete, length = pomodoro_time(start_time, duration)
 
     # Use string of length because timedelta is unsupported in sqlite
