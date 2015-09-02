@@ -41,10 +41,8 @@ def shutdown(connection):
     connection.close()
 
 
-def do_pomodoro(duration):
-    """Main method. Starts up, runs pomodoro and records it"""
-    connection = startup("pomodoros.db")
-
+def pomodoro_start():
+    """Get the information ready to start the pomodoro"""
     # Get task name ready for recording
     task = input("Input task name\n> ")
     print("Pomodoro starting in 5 seconds...")
@@ -54,6 +52,20 @@ def do_pomodoro(duration):
     start_only_time = str(start_time.time()).split(".")[:-1][0]  # H:M:S
     print("Pomodoro started at {}".format(start_only_time))
 
+    return task, start_time
+
+
+def play_complete_sound(filename):
+    """Play sound to signify completion of the pomodoro"""
+    # Play ding
+    FNULL = open(os.devnull, "w")  # Redirect output to /dev/null
+    subprocess.call(["play", "-v", "0.2", filename],
+                    stdout=FNULL,
+                    stderr=subprocess.STDOUT)
+
+
+def pomodoro_time(start_time, duration):
+    """Time the pomodoro and return whether it's complete"""
     duration_sec = duration * 60  # time.sleep takes duration in seconds
 
     complete = False  # Used to show whether a pomodoro was interrupted
@@ -63,22 +75,28 @@ def do_pomodoro(duration):
             sleep(duration_sec)  # Wait for length of pomodoro
             print("Pomodoro Complete!")
 
-            # Play ding
-            FNULL = open(os.devnull, "w")  # Redirect output to /dev/null
-            subprocess.call(["play", "-v", "0.2", "timer_done.wav"],
-                            stdout=FNULL,
-                            stderr=subprocess.STDOUT)
+            play_complete_sound("timer_done.wav")
+
             complete = True      # End the loop
 
         except KeyboardInterrupt:
             print("\nPomodoro interrupted!")
             break                # Task not complete but needs to end
 
-    if complete:
-        length = datetime.timedelta(minutes=duration)   # Use full length
-    else:
-        end_time = datetime.datetime.now()              # Pomodoro unfinished
-        length = end_time - start_time                  # So use timedelta
+    if complete:    # Use full length
+        length = datetime.timedelta(minutes=duration)
+    else:           # Pomodoro unfinished so use timedelta
+        end_time = datetime.datetime.now()
+        length = end_time - start_time
+
+    return complete, length
+
+
+def do_pomodoro(duration):
+    """Main method. Starts up, runs pomodoro and records it"""
+    connection = startup("pomodoros.db")
+    task, start_time = pomodoro_start()
+    complete, length = pomodoro_time(start_time, duration)
 
     # Use string of length because timedelta is unsupported in sqlite
     row = (start_time, task, str(length), complete)
