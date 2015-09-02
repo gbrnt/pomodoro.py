@@ -15,7 +15,7 @@ from sys import exit    # Exiting if pomodoro cancelled
 import subprocess       # For playing beep sound
 import os               # For devnull to hide "play"'s output
 
-POMODORO_DURATION = 0.25 #Length of pomodoro in minutes
+POMODORO_DURATION = 25 #Length of pomodoro in minutes
 
 
 def startup(db_name):
