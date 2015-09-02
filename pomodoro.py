@@ -11,11 +11,10 @@ from it.
 import datetime         # To get dates and times of pomodoros for logging
 import sqlite3          # Database interactions
 from time import sleep  # Waiting for pomodoro to complete
-from sys import exit    # Exiting if pomodoro cancelled
 import subprocess       # For playing beep sound
 import os               # For devnull to hide "play"'s output
 
-POMODORO_DURATION = 25 #Length of pomodoro in minutes
+POMODORO_DURATION = 25  # Length of pomodoro in minutes
 
 
 def startup(db_name):
@@ -78,9 +77,9 @@ def do_pomodoro(duration):
     if complete:
         length = datetime.timedelta(minutes=duration)   # Use full length
     else:
-        end_time = datetime.datetime.now()              # Pomodoro unfinished 
+        end_time = datetime.datetime.now()              # Pomodoro unfinished
         length = end_time - start_time                  # So use timedelta
-    
+
     # Use string of length because timedelta is unsupported in sqlite
     row = (start_time, task, str(length), complete)
     db_insert(connection, row)

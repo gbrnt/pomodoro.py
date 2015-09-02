@@ -35,7 +35,8 @@ def export_data(csv_name, data_list):
     """Export data to csv file"""
     with open(csv_name, "w+") as csv_file:
         for entry in data_list:
-            csv_file.write(",".join(entry) + "\n")  # Convert to comma-separated
+            # Convert to comma-separated string
+            csv_file.write(",".join(entry) + "\n")
 
     print("Exported as", csv_name)
 
@@ -44,6 +45,7 @@ def shutdown(connection):
     """Safely close database"""
     connection.commit()
     connection.close()
+
 
 def pomodoro_export():
     """Run the other methods"""
