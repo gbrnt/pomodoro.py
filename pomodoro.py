@@ -50,9 +50,11 @@ def do_pomodoro(duration):
     task = input("Input task name\n> ")
     print("Pomodoro starting in 5 seconds...")
     sleep(5)  # To give a bit of mental preparation time
-    print("Pomodoro started.")
 
     start_time = datetime.datetime.now()
+    start_only_time = str(start_time.time()).split(".")[:-1][0]  # H:M:S
+    print("Pomodoro started at {}".format(start_only_time))
+
     duration_sec = duration * 60  # time.sleep takes duration in seconds
 
     complete = False  # Used to show whether a pomodoro was interrupted
