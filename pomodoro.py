@@ -3,9 +3,8 @@
 """
 Pomodoro.py - Utility to time and track pomodoros
 
-The app on my tablet works well, but it'd be nice to have the information in
-a database I can access after a week of intensive work to get some statistics
-from it.
+The task name, start time, duration and completeness are recorded in
+a database. This can be exported to csv using pomodoro-export.py
 """
 
 import datetime         # To get dates and times of pomodoros for logging
@@ -13,32 +12,10 @@ import sqlite3          # Database interactions
 from time import sleep  # Waiting for pomodoro to complete
 import subprocess       # For playing beep sound
 import os               # For devnull to hide "play"'s output
+from sys import exit
+import db_interaction as db
 
 POMODORO_DURATION = 25  # Length of pomodoro in minutes
-
-
-def startup(db_name):
-    """Open database, return connection"""
-    connection = sqlite3.connect(db_name)
-    cur = connection.cursor()
-
-    # Create table on first start
-    cur.execute("CREATE TABLE IF NOT EXISTS pomodoros"
-                "(datetime, task, length, complete)")
-
-    return connection
-
-
-def db_insert(connection, row_data):
-    """Insert a row into the pomodoros table in the database"""
-    cur = connection.cursor()
-    cur.execute("INSERT INTO pomodoros VALUES (?,?,?,?)", row_data)
-
-
-def shutdown(connection):
-    """Safely close database"""
-    connection.commit()
-    connection.close()
 
 
 def pomodoro_start():
@@ -94,14 +71,14 @@ def pomodoro_time(start_time, duration):
 
 def do_pomodoro(duration):
     """Main method. Starts up, runs pomodoro and records it"""
-    connection = startup("pomodoros.db")
+    connection = db.startup("pomodoros.db")
     task, start_time = pomodoro_start()
     complete, length = pomodoro_time(start_time, duration)
 
     # Use string of length because timedelta is unsupported in sqlite
     row = (start_time, task, str(length), complete)
-    db_insert(connection, row)
+    db.insert(connection, row)
 
-    shutdown(connection)
+    db.shutdown(connection)
 
 do_pomodoro(POMODORO_DURATION)
