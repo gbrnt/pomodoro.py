@@ -50,7 +50,7 @@ def do_pomodoro(duration):
     task = input("Input task name\n> ")
     print("Pomodoro starting in 5 seconds...")
     sleep(5)  # To give a bit of mental preparation time
-    #print("...Started.")  # Not sure that's necessary
+    print("Pomodoro started.")
 
     start_time = datetime.datetime.now()
     duration_sec = duration * 60  # time.sleep takes duration in seconds
@@ -81,7 +81,6 @@ def do_pomodoro(duration):
     
     # Use string of length because timedelta is unsupported in sqlite
     row = (start_time, task, str(length), complete)
-    #print(row)
     db_insert(connection, row)
 
     shutdown(connection)
