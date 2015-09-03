@@ -1,5 +1,5 @@
 """
-Pomodoro.py - Utility to time and track pomodoros
+pomodoro.py - Utility to time and track pomodoros
 
 db_interaction.py contains the common database interaction code for
 pomodoro.py and pomodoro-export.py

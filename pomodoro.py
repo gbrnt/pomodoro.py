@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-Pomodoro.py - Utility to time and track pomodoros
+pomodoro.py - Utility to time and track pomodoros
 
 The task name, start time, duration and completeness are recorded in
 a database. This can be exported to csv using pomodoro-export.py

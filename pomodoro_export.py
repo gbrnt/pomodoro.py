@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
 """
-pomodoro-export.py - Export pomodoro.py database to .csv
+pomodoro.py - Utility to time and track pomodoros
 
+pomodoro-export.py contains the code for exporting the database to .csv. 
 This allows the csv to be analysed using another python script or just
 something like Libreoffice.
 """
