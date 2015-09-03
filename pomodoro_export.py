@@ -15,7 +15,8 @@ def export_data(csv_name, data_list):
     with open(csv_name, "w+") as csv_file:
         for entry in data_list:
             # Convert to comma-separated string
-            csv_file.write(",".join(entry) + "\n")
+            entry_csv = ",".join([str(item) for item in entry]) + "\n"
+            csv_file.write(entry_csv)
 
     print("Exported as", csv_name)
 
