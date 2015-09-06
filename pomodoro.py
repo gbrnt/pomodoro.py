@@ -39,7 +39,16 @@ def play_complete_sound(filename):
     """Play sound to signify completion of the pomodoro"""
     # Play ding
     FNULL = open(os.devnull, "w")  # Redirect output to /dev/null
-    subprocess.call(["play", "-v", "0.2", filename],
+
+    if os.name == "nt":
+	# The "0" argument number may need to be changed depending on which
+	# device you want the sound to play on - sox's default does not always
+	# work on windows
+        play_args = ["sox", filename, "-t", "waveaudio", "0"]
+    else:
+        play_args = ["play", "-v", "0.2", filename]
+
+    subprocess.call(play_args,
                     stdout=FNULL,
                     stderr=subprocess.STDOUT)
 

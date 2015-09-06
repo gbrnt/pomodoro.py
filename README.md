@@ -43,4 +43,4 @@ This csv can then be opened in a spreadsheet program for analysis. As of this mo
 
 Dependencies
 ------------
-There should be only one dependency which is not in the python stdlib - `sox` for its `play` command. I haven't yet tested on Windows, but it should work once `sox` is installed, and (if necessary) added to the path.
+There should be only one dependency which is not in the python stdlib - `sox` for its `play` command. On Windows, the `sox` main executable must be used (make sure it is added to the `PATH`). The device number may need to be changed in the `play_complete_sound()` function in `pomodoro.py`.
