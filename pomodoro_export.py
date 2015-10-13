@@ -29,8 +29,9 @@ def get_pomodoros(db_name):
     """Get the pomodoro data from the database"""
     conn = db.startup(db_name)
     pomodoros = db.get_data(conn)
+    db.shutdown(conn)
 
-    return pomodoros, conn
+    return pomodoros
 
 
 def pomodoro_export():
@@ -39,15 +40,13 @@ def pomodoro_export():
     if filename[-4:] != ".csv":
         filename = filename + ".csv"
 
-    pomodoros, conn = get_pomodoros("pomodoros.db")
+    pomodoros = get_pomodoros("pomodoros.db")
     export_data(filename, pomodoros)
-    db.shutdown(conn)
 
 
 def list_pomodoros():
     """Get pomodoro data and list it to the terminal"""
-    pomodoros, conn = get_pomodoros("pomodoros.db")
-    db.shutdown(conn)
+    pomodoros = get_pomodoros("pomodoros.db")
 
     for pomo in pomodoros:
         # Title is cut off at TITLE_CUTOFF_LENGTH
