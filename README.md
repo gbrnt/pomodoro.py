@@ -13,6 +13,8 @@ Input task name
 > ▯
 ```
 
+Alternatively, add the pomodoro name after the command - for example `python pomodoro.py "Example pomodoro name"`. As in the example, if the name is multiple words long quotation marks will need to be used. This may change in future updates.
+
 Once the task name is input, the pomodoro will start after 5 seconds, during which time it can be cancelled with `Ctrl-C`.
 
 ```
@@ -26,7 +28,7 @@ If after starting the pomodoro is interrupted with `Ctrl-C`, the message `Pomodo
 
 Exporting pomodoros
 -------------------
-`pomodoro_export.py` is used to export pomodoros into a csv file. Upon running it, it prints in the terminal:
+Pomodoro export functionality is used to export the pomodoro data from the database to a .csv file. The quickest way to do this is to run `python pomodoro.py -e EXPORT_FILENAME`. Alternatively, you can run `python pomodoro_export.py` and you will be prompted for a file name:
 
 ```
 Enter filename for export
@@ -39,7 +41,38 @@ The filename need not end with ".csv", but if it does not it will be automatical
 Exported as [NAME].csv
 ```
 
-This csv can then be opened in a spreadsheet program for analysis. As of this moment there are no plans to add analysis functions to pomodoro.py
+This csv can then be opened in a spreadsheet program for analysis. In future some basic analysis functions may be added.
+
+Full help message
+-----------------
+This is the full help message obtained from running `python pomodoro.py -h`:
+
+```
+usage: pomodoro.py [-h] [-e EXPORT_FILENAME] [-m] [-d DATES DATES]
+                   [-a [ANALYSIS_FILENAME]] [-r] [-l [N]] [-t POMODORO_LENGTH]
+                   [NAME]
+
+pomodoro.py - Utility to time and track pomodoros
+
+positional arguments:
+  NAME                  pomodoro name or export filename
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -e EXPORT_FILENAME, --export EXPORT_FILENAME
+                        export to file EXPORT_FILENAME
+  -m, --month           select pomodoros from last month
+  -d DATES DATES, --dates DATES DATES
+                        select dates pomodoros should fall between, inclusive
+  -a [ANALYSIS_FILENAME], --analyse [ANALYSIS_FILENAME]
+                        analyse pomodoros, with optional export to file
+                        ANALYSIS_FILENAME
+  -r, --repeat          Repeat last pomodoro
+  -l [N], --list_pomodoros [N]
+                        list last N pomodoros
+  -t POMODORO_LENGTH, --time POMODORO_LENGTH
+                        set pomodoro length in minutes
+```
 
 Dependencies
 ------------
