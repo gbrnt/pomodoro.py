@@ -14,14 +14,27 @@ import os                    # Devnull to hide "play"'s output
 from sys import exit         # Exiting after pomodoro cancelled
 import db_interaction as db  # Database interactions
 
+# Local imports
+import parse_args
+import pomodoro_export
+
 POMODORO_DURATION = 25  # Length of pomodoro in minutes
+DATABASE_NAME = "pomodoros.db"
 
 
-def pomodoro_start(connection):
+def pomodoro_start(connection, name):
     """Get the information ready to start the pomodoro"""
-    try:
+    if name is None:
         # Get task name ready for recording
-        task = input("Input task name\n> ")
+        try:
+            task = input("Input task name\n> ")
+        except KeyboardInterrupt:
+            print("\nPomodoro cancelled.")
+            exit(0)
+    else:
+        task = name
+
+    try:
         print("Pomodoro starting in 5 seconds...")
         sleep(5)  # To give a bit of mental preparation time
     except KeyboardInterrupt:
@@ -41,9 +54,9 @@ def play_complete_sound(filename):
     FNULL = open(os.devnull, "w")  # Redirect output to /dev/null
 
     if os.name == "nt":
-	# The "0" argument number may need to be changed depending on which
-	# device you want the sound to play on - sox's default does not always
-	# work on windows
+        # The "0" argument number may need to be changed depending on which
+        # device you want the sound to play on - sox's default does not always
+        # work on windows
         play_args = ["sox", filename, "-t", "waveaudio", "0"]
     else:
         play_args = ["play", "-v", "0.2", filename]
@@ -81,10 +94,10 @@ def pomodoro_time(start_time, duration):
     return complete, length
 
 
-def do_pomodoro(duration):
+def do_pomodoro(duration, name):
     """Main method. Starts up, runs pomodoro and records it"""
     connection = db.startup("pomodoros.db")
-    task, start_time = pomodoro_start(connection)
+    task, start_time = pomodoro_start(connection, name)
     complete, length = pomodoro_time(start_time, duration)
 
     # Use string of length because timedelta is unsupported in sqlite
@@ -93,4 +106,32 @@ def do_pomodoro(duration):
 
     db.shutdown(connection)
 
-do_pomodoro(POMODORO_DURATION)
+if __name__ == "__main__":
+    args = parse_args.parser.parse_args()
+    print(args)
+
+    if not args.export and not args.analyse and not args.list_pomodoros:
+        # Normal pomodoro
+        duration = args.time[0]
+        
+        if args.repeat:
+            # Get most recent pomodoro from database
+            last_pomodoro = pomodoro_export.get_last_n_pomodoros(DATABASE_NAME)[0]
+            name = last_pomodoro[1]
+        else:
+            name = args.name
+        do_pomodoro(duration, name)
+
+    elif args.list_pomodoros:
+        if args.list_pomodoros[0] is None:
+            num = 5
+        else:
+            num = args.list_pomodoros[0]
+        pomodoro_export.list_pomodoros(DATABASE_NAME, num)
+
+    elif args.export:
+        export_name = args.export[0]
+        pomodoro_export.pomodoro_export(export_name)
+
+    else:
+        print("Analyse functionality not implemented yet")

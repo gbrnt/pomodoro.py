@@ -3,7 +3,7 @@
 """
 pomodoro.py - Utility to time and track pomodoros
 
-pomodoro-export.py contains the code for exporting the database to .csv. 
+pomodoro-export.py contains the code for exporting the database to .csv.
 This allows the csv to be analysed using another python script or just
 something like Libreoffice.
 """
@@ -34,9 +34,25 @@ def get_pomodoros(db_name):
     return pomodoros
 
 
-def pomodoro_export():
+def get_last_n_pomodoros(db_name, num=1):
+    """Get the last x pomodoros from the database"""
+    connection = db.startup(db_name)
+    cur = connection.cursor()
+    db_query ="SELECT * FROM pomodoros ORDER BY datetime DESC LIMIT {};".format(num)
+    pomodoros = cur.execute(db_query).fetchall()
+    db.shutdown(connection)
+    
+    return pomodoros
+
+def pomodoro_export(filename=None):
     """Get pomodoro data and call export_data to export to file"""
-    filename = input("Enter filename for export\n> ")
+    if filename is None:
+        try:
+            filename = input("Enter filename for export\n> ")
+        except KeyboardInterrupt:
+            print("\nExport cancelled.")
+            exit(0)
+
     if filename[-4:] != ".csv":
         filename = filename + ".csv"
 
@@ -44,9 +60,9 @@ def pomodoro_export():
     export_data(filename, pomodoros)
 
 
-def list_pomodoros():
+def list_pomodoros(db_name, num=5):
     """Get pomodoro data and list it to the terminal"""
-    pomodoros = get_pomodoros("pomodoros.db")
+    pomodoros = get_last_n_pomodoros(db_name, num)
 
     for pomo in pomodoros:
         # Title is cut off at TITLE_CUTOFF_LENGTH
@@ -58,8 +74,7 @@ def list_pomodoros():
         pomo_time = pomo[0][:-10]
 
         # Print a table
-        print(pomo_time + "  |  " + pomo_title)
+        print(pomo_time + " | " + pomo_title)
 
 if __name__ == "__main__":
-    #pomodoro_export()
-    list_pomodoros()
+    pomodoro_export()
