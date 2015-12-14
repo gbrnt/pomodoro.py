@@ -8,6 +8,7 @@ a database. This can be exported to csv using pomodoro-export.py
 """
 
 import argparse
+import datetime
 
 parser = argparse.ArgumentParser(
         description="pomodoro.py - Utility to time and track pomodoros")
@@ -20,12 +21,12 @@ parser.add_argument("-e", "--export",
 
 parser.add_argument("-m", "--month",
                     action="store_true",
-                    help="select pomodoros from last month")
+                    help="select pomodoros from last complete calendar month")
 
 parser.add_argument("-d", "--dates",
                     nargs=2,
                     type=str,
-                    help="select dates pomodoros should fall between, inclusive")
+                    help="select date range pomodoros should fall between, inclusive")
 
 parser.add_argument("-a", "--analyse",
                     nargs="?",
@@ -59,9 +60,34 @@ parser.add_argument("name",
                     metavar="NAME",
                     help="pomodoro name or export filename")
 
+def date_range(args):
+    """Calculate date range needed from arguments provided"""
+    if args.dates:
+        try:
+            date1 = datetime.datetime.strptime(args.dates[0], "%Y-%m-%d").date()
+            date2 = datetime.datetime.strptime(args.dates[1], "%Y-%m-%d").date()
+        except ValueError as exception_message:
+            print(exception_message)
+            exit(0)
+
+        # Make date2 end of day rather than start
+        # Otherwise it's treated as the very start of the day
+        date2 = date2 + datetime.timedelta(days=1)
+
+    elif args.month:
+        current_datetime = datetime.datetime.now() # Current date
+        first_of_month = datetime.date(year=current_datetime.year,
+                                       month=current_datetime.month,
+                                       day=1)
+        date2 = first_of_month
+
+        date1 = date2.replace(month=date2.month - 1)
+
+    else:
+        date1, date2 = None, None
+
+    return date1, date2
+
 if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
-
-# Check to see whether it's a normal pomodoro
-# if not args.export and not args.analyse:

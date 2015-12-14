@@ -11,7 +11,7 @@ something like Libreoffice.
 import db_interaction as db
 
 # Length at which to cut off the pomodoro title when printing in terminal
-TITLE_CUTOFF_LENGTH = 25
+TITLE_CUTOFF_LENGTH = 50
 
 
 def export_data(csv_name, data_list):
@@ -38,13 +38,29 @@ def get_last_n_pomodoros(db_name, num=1):
     """Get the last x pomodoros from the database"""
     connection = db.startup(db_name)
     cur = connection.cursor()
-    db_query ="SELECT * FROM pomodoros ORDER BY datetime DESC LIMIT {};".format(num)
+
+    db_query = "SELECT * FROM pomodoros ORDER BY datetime DESC LIMIT {};".format(num)
     pomodoros = cur.execute(db_query).fetchall()
+
     db.shutdown(connection)
     
     return pomodoros
 
-def pomodoro_export(filename=None):
+def get_pomodoros_between_dates(db_name, date1, date2):
+    """Get all pomodoros between two dates (inclusive)"""
+    connection = db.startup(db_name)
+    cur = connection.cursor()
+
+    query_base = "SELECT * FROM pomodoros WHERE datetime BETWEEN '{0}' AND '{1}';"
+    db_query = query_base.format(date1, date2)
+    pomodoros = cur.execute(db_query).fetchall()
+
+    db.shutdown(connection)
+    
+    return pomodoros
+
+
+def pomodoro_export(filename=None, pomodoros=None):
     """Get pomodoro data and call export_data to export to file"""
     if filename is None:
         try:
@@ -56,7 +72,8 @@ def pomodoro_export(filename=None):
     if filename[-4:] != ".csv":
         filename = filename + ".csv"
 
-    pomodoros = get_pomodoros("pomodoros.db")
+    if pomodoros is None:
+        pomodoros = get_pomodoros("pomodoros.db")
     export_data(filename, pomodoros)
 
 

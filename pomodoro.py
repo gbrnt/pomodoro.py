@@ -108,7 +108,8 @@ def do_pomodoro(duration, name):
 
 if __name__ == "__main__":
     args = parse_args.parser.parse_args()
-    print(args)
+
+    date1, date2 = parse_args.date_range(args)
 
     if not args.export and not args.analyse and not args.list_pomodoros:
         # Normal pomodoro
@@ -131,7 +132,18 @@ if __name__ == "__main__":
 
     elif args.export:
         export_name = args.export[0]
-        pomodoro_export.pomodoro_export(export_name)
+        
+        if date1 is not None:
+            display_date2 = date2 - datetime.timedelta(days=1)
+            print("Exporting pomodoros between {0} and {1}".format(date1, display_date2))
+            pomodoros = pomodoro_export.get_pomodoros_between_dates(
+                    DATABASE_NAME,
+                    date1, date2)
+            pomodoro_export.pomodoro_export(export_name, pomodoros)
+
+        else:
+            print("Exporting all pomodoros")
+            pomodoro_export.pomodoro_export(export_name)
 
     else:
         print("Analyse functionality not implemented yet")
