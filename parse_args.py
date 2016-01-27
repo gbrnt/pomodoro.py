@@ -33,6 +33,9 @@ parser.add_argument("-a", "--analyse",
                     type=str,
                     metavar="ANALYSIS_FILENAME",
                     action="append",
+                    choices=["breaks",
+                             "frequency",
+                             "complete"],
                     help="analyse pomodoros, with optional export to file ANALYSIS_FILENAME")
 
 parser.add_argument("-r", "--repeat",
@@ -60,6 +63,7 @@ parser.add_argument("name",
                     metavar="NAME",
                     help="pomodoro name or export filename")
 
+
 def date_range(args):
     """Calculate date range needed from arguments provided"""
     if args.dates:
@@ -75,7 +79,7 @@ def date_range(args):
         date2 = date2 + datetime.timedelta(days=1)
 
     elif args.month:
-        current_datetime = datetime.datetime.now() # Current date
+        current_datetime = datetime.datetime.now()  # Current date
         first_of_month = datetime.date(year=current_datetime.year,
                                        month=current_datetime.month,
                                        day=1)
