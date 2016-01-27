@@ -29,10 +29,10 @@ parser.add_argument("-d", "--dates",
                     help="select date range pomodoros should fall between, inclusive")
 
 parser.add_argument("-a", "--analyse",
-                    nargs="?",
+                    nargs="*",
                     type=str,
                     metavar="ANALYSIS_FILENAME",
-                    action="append",
+                    action="store",
                     choices=["breaks",
                              "frequency",
                              "complete"],

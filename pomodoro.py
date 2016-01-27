@@ -12,11 +12,12 @@ from time import sleep       # Waiting for pomodoro to complete
 import subprocess            # Playing beep sound
 import os                    # Devnull to hide "play"'s output
 from sys import exit         # Exiting after pomodoro cancelled
-import db_interaction as db  # Database interactions
 
 # Local imports
+import db_interaction as db  # Database interactions
 import parse_args
 import pomodoro_export
+import pomodoro_analyse
 
 POMODORO_DURATION = 25  # Length of pomodoro in minutes
 DATABASE_NAME = "pomodoros.db"
@@ -111,8 +112,8 @@ if __name__ == "__main__":
 
     date1, date2 = parse_args.date_range(args)
 
+    # Normal pomodoro
     if not args.export and not args.analyse and not args.list_pomodoros:
-        # Normal pomodoro
         duration = args.time[0]
         
         if args.repeat:
@@ -123,6 +124,7 @@ if __name__ == "__main__":
             name = args.name
         do_pomodoro(duration, name)
 
+    # List pomodoros
     elif args.list_pomodoros:
         if args.list_pomodoros[0] is None:
             num = 5
@@ -145,5 +147,18 @@ if __name__ == "__main__":
             print("Exporting all pomodoros")
             pomodoro_export.pomodoro_export(export_name)
 
+    # Analyse pomodoros
     else:
-        print("Analyse functionality not implemented yet")
+        #print(args.analyse)
+
+        if date1 is not None:
+            display_date2 = date2 - datetime.timedelta(days=1)
+            print("Analysing pomodoros between {0} and {1}".format(date1,display_date2))
+            pomodoros = pomodoro_export.get_pomodoros_between_dates(
+                    DATABASE_NAME,
+                    date1, date2)
+        else:
+            print("Analysing all pomodoros")
+            pomodoros = pomodoro_export.get_pomodoros(DATABASE_NAME)
+
+        pomodoro_analyse.analyse_pomodoros(pomodoros, args)

@@ -46,6 +46,7 @@ def get_last_n_pomodoros(db_name, num=1):
     
     return pomodoros
 
+
 def get_pomodoros_between_dates(db_name, date1, date2):
     """Get all pomodoros between two dates (inclusive)"""
     connection = db.startup(db_name)
