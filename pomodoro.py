@@ -35,7 +35,7 @@ def pomodoro_start(connection, name):
         task = name
 
     try:
-        print("Pomodoro starting in 5 seconds...")
+        print("Pomodoro \"{}\" starting in 5 seconds...".format(name))
         sleep(5)  # To give a bit of mental preparation time
     except KeyboardInterrupt:
         print("\nPomodoro cancelled.")
