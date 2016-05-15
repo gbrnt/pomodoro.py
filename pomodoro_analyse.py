@@ -15,6 +15,7 @@ def dt_string_to_datetime(string):
             "%Y-%m-%d %H:%M:%S.%f")
     return dt
 
+
 def len_string_to_timedelta(string):
     """Convert pomodoro's length string to a timedelta"""
     length_list = [float(i) for i in string.split(":")]
@@ -23,6 +24,12 @@ def len_string_to_timedelta(string):
                             seconds=length_list[2])
     return td
 
+
+def remove_incomplete(pomodoros):
+    # If incomplete, last element will be "0"
+    return [pomo for pomo in pomodoros if pomo[-1] == "1"]
+
+
 def analyse_pomodoros(pomodoros, args):
     """Find and print statistics about pomodoros"""
 
@@ -30,13 +37,13 @@ def analyse_pomodoros(pomodoros, args):
     output = ""
 
     if "breaks" in args.analyse:
-        # Analyse the lengths of the breaks between pomodoros
-        output = output + "\nAnalysing breaks\n"
+        # Find average length of the breaks between pomodoros
+        output += "\nAnalysing breaks"
 
         break_lengths = []
         last_end_time = datetime.timedelta(0)
 
-        for n, pomo in enumerate(pomodoros):
+        for pomo in pomodoros:
             start_time = dt_string_to_datetime(pomo[0])
             length = len_string_to_timedelta(pomo[2])
 
@@ -47,7 +54,7 @@ def analyse_pomodoros(pomodoros, args):
             last_end_time = end_time
 
         # First element is date of first one, so ignore it
-        break_lengths = break_lengths[1:] 
+        break_lengths = break_lengths[1:]
 
         # Exclude breaks over a threshold (1 hour)
         # Over this threshold it's not really a break
@@ -56,13 +63,49 @@ def analyse_pomodoros(pomodoros, args):
 
         # Simple averaging - sum divided by number
         # Timedelta of 0 prevents TypeError
-        average_timedelta = sum(short_breaks, datetime.timedelta(0)) / len(short_breaks)
+        average_timedelta = (
+                sum(short_breaks, datetime.timedelta(0)) /
+                len(short_breaks)
+                )
 
-        output = output + "\nAverage length of breaks which were less than 1 hour: {}\n".format(average_timedelta)
-    
+        output += ("\nAverage length of breaks which were less than 1 "
+                   "hour: {}\n".format(average_timedelta))
+
     if "frequency" in args.analyse:
         # Analyse the frequency of pomodoros
-        pass
+        # A graph here would be nice
+        # For now it just works out some frequency stats:
+        # Per day, per week, time period
+
+        output += "\nAnalysing frequency of valid pomodoros\n"
+
+        pomodoros = remove_incomplete(pomodoros)
+
+        total_pomodoros = len(pomodoros)
+        first_pomodoro_start = dt_string_to_datetime(pomodoros[0][0])
+        final = pomodoros[-1]
+        final_pomodoro_start = dt_string_to_datetime(final[0])
+        final_pomodoro_len = len_string_to_timedelta(final[2])
+        final_pomodoro_end = final_pomodoro_start + final_pomodoro_len
+
+        total_pomodoro_length = final_pomodoro_end - first_pomodoro_start
+
+        average_time_per = total_pomodoro_length / total_pomodoros
+
+        output += ("On average, you did a pomodoro every {time} hours "
+                   "between {start} and {end}.\n").format(
+                           time=average_time_per,
+                           start=first_pomodoro_start,
+                           end=final_pomodoro_end)
+
+        days = total_pomodoro_length.days
+        weeks = days / 7
+
+        pomodoros_per_day = total_pomodoros / days
+        pomodoros_per_week = total_pomodoros / weeks
+
+        output += "That's {ppd:.2f} pomodoros per day, or {ppw:.2f} per week!".format(
+                ppd=pomodoros_per_day, ppw=pomodoros_per_week)
 
     if "complete" in args.analyse:
         # Analyse the number of complete and incomplete pomodoros
