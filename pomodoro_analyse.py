@@ -39,6 +39,17 @@ def analyse_pomodoros(pomodoros, args):
     # Use string for output so that it can be written to file if desired
     output = ""
 
+    # Commonly used stats
+    total_pomodoros = len(pomodoros)
+    first_pomodoro_start = dt_string_to_datetime(pomodoros[0][0])
+
+    final = pomodoros[-1]
+    final_pomodoro_start = dt_string_to_datetime(final[0])
+    final_pomodoro_len = len_string_to_timedelta(final[2])
+    final_pomodoro_end = final_pomodoro_start + final_pomodoro_len
+
+    total_pomodoro_length = final_pomodoro_end - first_pomodoro_start
+
     if "breaks" in args.analyse:
         # Find average length of the breaks between pomodoros
         output += "\nAnalysing breaks"
@@ -83,15 +94,6 @@ def analyse_pomodoros(pomodoros, args):
         output += "\nAnalysing frequency of valid pomodoros\n"
 
         pomodoros = only_complete(pomodoros)
-
-        total_pomodoros = len(pomodoros)
-        first_pomodoro_start = dt_string_to_datetime(pomodoros[0][0])
-        final = pomodoros[-1]
-        final_pomodoro_start = dt_string_to_datetime(final[0])
-        final_pomodoro_len = len_string_to_timedelta(final[2])
-        final_pomodoro_end = final_pomodoro_start + final_pomodoro_len
-
-        total_pomodoro_length = final_pomodoro_end - first_pomodoro_start
 
         average_time_per = total_pomodoro_length / total_pomodoros
 
