@@ -86,7 +86,6 @@ def analyse_pomodoros(pomodoros, args):
                    "hour: {}\n".format(average_timedelta))
 
     if "frequency" in args.analyse:
-        # Analyse the frequency of pomodoros
         # A graph here would be nice
         # For now it just works out some frequency stats:
         # Per day, per week, time period
@@ -113,8 +112,28 @@ def analyse_pomodoros(pomodoros, args):
                 ppd=pomodoros_per_day, ppw=pomodoros_per_week)
 
     if "complete" in args.analyse:
-        # Analyse the number of complete and incomplete pomodoros
-        pass
+        output += "\nAnalysing completed pomodoros\n"
+
+        complete_pomodoros = only_complete(pomodoros)
+        incomplete_pomodoros = only_incomplete(pomodoros)
+
+        total_complete = len(complete_pomodoros)
+        total_incomplete = len(incomplete_pomodoros)
+
+        # Percentages are a nice way to present this info
+        perc_complete = (total_complete / total_pomodoros) * 100
+        perc_incomplete = (total_incomplete / total_pomodoros) * 100
+
+        output += ("Out of {total} total pomodoros:\n"
+                   "  You completed {comp} pomodoros "
+                   "({perc_comp:.2f}%).\n"
+                   "  You left {incomp} incomplete pomodoros "
+                   "({perc_incomp:.2f}%).\n"
+                   ).format(total=total_pomodoros,
+                            comp=total_complete,
+                            perc_comp=perc_complete,
+                            incomp=total_incomplete,
+                            perc_incomp=perc_incomplete)
     
     if "count" in args.analyse:
         # Do things
