@@ -33,6 +33,14 @@ def only_complete(pomodoros):
     return [p for p in pomodoros if p[-1] == "1"]
 
 
+def filter_topic(pomodoros, topic):
+    """
+    Returns pomodoros whose names begin with topic
+    The idea of my pomodoro system is that the first word is the topic
+    """
+    return [p for p in pomodoros if p[1].startswith(topic)]
+
+
 def analyse_pomodoros(pomodoros, args):
     """Find and print statistics about pomodoros"""
 
@@ -136,7 +144,20 @@ def analyse_pomodoros(pomodoros, args):
                             perc_incomp=perc_incomplete)
     
     if "count" in args.analyse:
-        # Do things
-        pass
+        # Uses the pomodoro name argument as the type to count.
+        # That's kind of hacky - might be a good idea to rework the arguments
+        topic = args.name
+
+        output += "\nAnalysing pomodoros for \"{}\"\n".format(topic)
+
+        topic_pomodoros = filter_topic(pomodoros, topic)
+        topic_total = len(topic_pomodoros)
+        percentage_topic = topic_total / total_pomodoros * 100
+
+        output += ("  {topic_total} pomodoros were done for {topic} "
+                   "({percentage:.2f}%)\n"
+                   ).format(topic_total=topic_total,
+                            topic=topic,
+                            percentage=percentage_topic)
 
     print(output)
