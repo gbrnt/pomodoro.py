@@ -25,9 +25,12 @@ def len_string_to_timedelta(string):
     return td
 
 
-def remove_incomplete(pomodoros):
-    # If incomplete, last element will be "0"
-    return [pomo for pomo in pomodoros if pomo[-1] == "1"]
+def only_incomplete(pomodoros):
+    return [p for p in pomodoros if p[-1] == "0"]
+
+
+def only_complete(pomodoros):
+    return [p for p in pomodoros if p[-1] == "1"]
 
 
 def analyse_pomodoros(pomodoros, args):
@@ -79,7 +82,7 @@ def analyse_pomodoros(pomodoros, args):
 
         output += "\nAnalysing frequency of valid pomodoros\n"
 
-        pomodoros = remove_incomplete(pomodoros)
+        pomodoros = only_complete(pomodoros)
 
         total_pomodoros = len(pomodoros)
         first_pomodoro_start = dt_string_to_datetime(pomodoros[0][0])
