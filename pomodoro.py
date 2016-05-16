@@ -158,7 +158,7 @@ if __name__ == "__main__":
                     DATABASE_NAME,
                     date1, date2)
         else:
-            print("Analysing all pomodoros")
+            #print("Analysing all pomodoros")  # Not necessary
             pomodoros = pomodoro_export.get_pomodoros(DATABASE_NAME)
 
         pomodoro_analyse.analyse_pomodoros(pomodoros, args)

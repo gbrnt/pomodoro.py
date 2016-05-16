@@ -60,8 +60,6 @@ def analyse_pomodoros(pomodoros, args):
 
     if "breaks" in args.analyse:
         # Find average length of the breaks between pomodoros
-        output += "\nAnalysing breaks"
-
         break_lengths = []
         last_end_time = datetime.timedelta(0)
 
@@ -90,15 +88,13 @@ def analyse_pomodoros(pomodoros, args):
                 len(short_breaks)
                 )
 
-        output += ("\nAverage length of breaks which were less than 1 "
+        output += ("Average length of breaks which were less than 1 "
                    "hour: {}\n".format(average_timedelta))
 
     if "frequency" in args.analyse:
         # A graph here would be nice
         # For now it just works out some frequency stats:
         # Per day, per week, time period
-
-        output += "\nAnalysing frequency of valid pomodoros\n"
 
         pomodoros = only_complete(pomodoros)
 
@@ -116,12 +112,10 @@ def analyse_pomodoros(pomodoros, args):
         pomodoros_per_day = total_pomodoros / days
         pomodoros_per_week = total_pomodoros / weeks
 
-        output += "That's {ppd:.2f} pomodoros per day, or {ppw:.2f} per week!".format(
+        output += "That's {ppd:.2f} pomodoros per day, or {ppw:.2f} per week!\n".format(
                 ppd=pomodoros_per_day, ppw=pomodoros_per_week)
 
     if "complete" in args.analyse:
-        output += "\nAnalysing completed pomodoros\n"
-
         complete_pomodoros = only_complete(pomodoros)
         incomplete_pomodoros = only_incomplete(pomodoros)
 
@@ -146,15 +140,17 @@ def analyse_pomodoros(pomodoros, args):
     if "count" in args.analyse:
         # Uses the pomodoro name argument as the type to count.
         # That's kind of hacky - might be a good idea to rework the arguments
-        topic = args.name
 
-        output += "\nAnalysing pomodoros for \"{}\"\n".format(topic)
+        if args.name is None:  # No name specified
+            topic = ""
+        else:
+            topic = args.name
 
         topic_pomodoros = filter_topic(pomodoros, topic)
         topic_total = len(topic_pomodoros)
         percentage_topic = topic_total / total_pomodoros * 100
 
-        output += ("  {topic_total} pomodoros were done for {topic} "
+        output += ("  {topic_total} pomodoros were done for \"{topic}\" "
                    "({percentage:.2f}%)\n"
                    ).format(topic_total=topic_total,
                             topic=topic,
