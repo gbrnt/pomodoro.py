@@ -110,5 +110,9 @@ def analyse_pomodoros(pomodoros, args):
     if "complete" in args.analyse:
         # Analyse the number of complete and incomplete pomodoros
         pass
+    
+    if "count" in args.analyse:
+        # Do things
+        pass
 
     print(output)
