@@ -41,6 +41,23 @@ def filter_topic(pomodoros, topic):
     return [p for p in pomodoros if p[1].startswith(topic)]
 
 
+def count_pomodoros(pomodoros, topic, total_pomodoros):
+    """
+    Count pomodoros which begin with topic
+    """
+
+    topic_pomodoros = filter_topic(pomodoros, topic)
+    topic_total = len(topic_pomodoros)
+    percentage_topic = topic_total / total_pomodoros * 100
+    
+    output = ("  {topic_total} pomodoros were done for \"{topic}\" " "({percentage:.2f}%)\n"
+               ).format(topic_total=topic_total,
+                    topic=topic,
+                    percentage=percentage_topic)
+
+    return output
+
+
 def analyse_pomodoros(pomodoros, args):
     """Find and print statistics about pomodoros"""
 
@@ -146,14 +163,6 @@ def analyse_pomodoros(pomodoros, args):
         else:
             topic = args.name
 
-        topic_pomodoros = filter_topic(pomodoros, topic)
-        topic_total = len(topic_pomodoros)
-        percentage_topic = topic_total / total_pomodoros * 100
-
-        output += ("  {topic_total} pomodoros were done for \"{topic}\" "
-                   "({percentage:.2f}%)\n"
-                   ).format(topic_total=topic_total,
-                            topic=topic,
-                            percentage=percentage_topic)
+        output += count_pomodoros(pomodoros, topic, total_pomodoros)
 
     print(output)
