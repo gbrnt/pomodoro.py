@@ -6,6 +6,7 @@ a database. This can be exported to csv using pomodoro-export.py
 """
 
 import datetime
+from collections import defaultdict
 
 
 def dt_string_to_datetime(string):
@@ -38,7 +39,7 @@ def filter_topic(pomodoros, topic):
     Returns pomodoros whose names begin with topic
     The idea of my pomodoro system is that the first word is the topic
     """
-    return [p for p in pomodoros if p[1].startswith(topic)]
+    return [p for p in pomodoros if p[1].startswith(topic+" ")]
 
 
 def count_pomodoros(pomodoros, topic, total_pomodoros):
@@ -164,5 +165,20 @@ def analyse_pomodoros(pomodoros, args):
             topic = args.name
 
         output += count_pomodoros(pomodoros, topic, total_pomodoros)
+
+    if "topic" in args.analyse:
+        # Call count for each topic
+
+        topics = defaultdict(int)
+
+        for pomo in pomodoros:
+            topic = pomo[1].split(" ")[0]  # Topic is first word
+            topics[topic] += 1
+
+        sorted_topics = sorted(topics, reverse=True,
+                               key=lambda topic: topics[topic])
+
+        for topic in sorted_topics:
+            output += count_pomodoros(pomodoros, topic, total_pomodoros)
 
     print(output)

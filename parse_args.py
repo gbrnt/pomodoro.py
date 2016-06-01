@@ -36,7 +36,8 @@ parser.add_argument("-a", "--analyse",
                     choices=["breaks",
                              "frequency",
                              "complete",
-                             "count"],
+                             "count",
+                             "topic"],
                     help="analyse pomodoros, with optional export to file ANALYSIS_FILENAME")
 
 parser.add_argument("-r", "--repeat",
